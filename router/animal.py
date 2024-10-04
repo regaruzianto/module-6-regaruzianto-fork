@@ -7,6 +7,38 @@ last_assigned_id = 2
 
 @animal_route.route("/", methods=["GET"])
 def get_animal():
+    """
+    Get all animals
+    ---
+    responses:
+      200:
+        description: Get list of all animals
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              name:
+                type: string
+                example: rabbit
+              age:
+                type: integer
+                example: 3
+              gender:
+                type: string
+                example: female
+              species:
+                type: string
+                example: mamals
+              special_requirements:
+                type: string
+                example: Needs medication
+      404:
+        description: No animals found
+    """
     animaldb = database.get("animals")   
     if animaldb is None:
         return jsonify({"message": "Animal not found"}),404
@@ -15,6 +47,42 @@ def get_animal():
 
 @animal_route.route("/<int:keyname>", methods=["GET"])
 def get_single_animal(keyname):
+    """
+    Get a single animal by ID
+    ---
+    parameters:
+      - name: keyname
+        in: path
+        type: integer
+        required: true
+        description: ID of the animal to retrieve
+    responses:
+      200:
+        description: A single animal object
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: rabbit
+            age:
+              type: integer
+              example: 3
+            gender:
+              type: string
+              example: female
+            species:
+              type: string
+              example: mamals
+            special_requirements:
+              type: string
+              example: Needs medication
+      404:
+        description: Animal not found
+    """
     animaldb = database.get("animals")
     animal = next((item for item in animaldb if item["id"] == keyname), None)
     if animal is None:
@@ -25,6 +93,59 @@ def get_single_animal(keyname):
 
 @animal_route.route("", methods=["POST"])
 def add_animal():
+    """
+    Add a new animal
+    ---
+    parameters:
+      - in: body
+        name: body
+        description: JSON object containing animal details
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: rabbit
+            age:
+              type: integer
+              example: 3
+            gender:
+              type: string
+              example: female
+            species:
+              type: string
+              example: mamals
+            special_requirements:
+              type: string
+              example: Needs medication
+    responses:
+      201:
+        description: Animal created successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 3
+            name:
+              type: string
+              example: rabbit
+            age:
+              type: integer
+              example: 3
+            gender:
+              type: string
+              example: female
+            species:
+              type: string
+              example: mamals
+            special_requirements:
+              type: string
+              example: Needs medication
+      400:
+        description: Animal already exists
+    """
     global last_assigned_id 
 
     data = request.json
@@ -57,6 +178,64 @@ def add_animal():
 
 @animal_route.route("/<int:id>", methods=["PUT"])
 def update_animal(id):
+    """
+    Update an existing animal
+    ---
+    parameters:
+      - in: path
+        name: id
+        type: integer
+        required: true
+        description: ID of the animal to update
+      - in: body
+        name: body
+        description: JSON object containing updated animal details
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              example: rabbit
+            age:
+              type: integer
+              example: 4
+            gender:
+              type: string
+              example: female
+            species:
+              type: string
+              example: mamals
+            special_requirements:
+              type: string
+              example: Needs medication
+    responses:
+      200:
+        description: Animal updated successfully
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: rabbit
+            age:
+              type: integer
+              example: 4
+            gender:
+              type: string
+              example: female
+            species:
+              type: string
+              example: mamals
+            special_requirements:
+              type: string
+              example: Needs medication
+      404:
+        description: Animal not found
+    """
     animaldb = database.get("animals")
     data = request.json
     name = data.get("name")
@@ -86,6 +265,27 @@ def update_animal(id):
 
 @animal_route.route("/<int:id>", methods=["DELETE"])
 def delete_animal(id):
+    """
+    Delete an existing animal
+    ---
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID of the animal to delete
+    responses:
+      200:
+        description: Animal deleted successfully
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Animal with ID 1 has been deleted successfully."
+      404:
+        description: Animal not found
+    """
     animaldb = database.get("animals")
     
     animal = next((item for item in animaldb if item["id"] == id), None)

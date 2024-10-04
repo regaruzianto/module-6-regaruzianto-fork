@@ -1,6 +1,7 @@
 from flask import Flask
 from router.user import user_route
 from router.animal import animal_route
+from flasgger import Swagger
 
 
 
@@ -12,3 +13,4 @@ def hello_world():
 
 app.register_blueprint(animal_route)
 app.register_blueprint(user_route)
+swagger = Swagger(app)
